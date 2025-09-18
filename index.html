@@ -21,7 +21,7 @@
         </div>
 
         <!-- Feedback and Takeaways Section -->
-        <form id="feedback-form" action="https://formspree.io/f/xyzdrgar" method="POST" class="space-y-6">
+        <form id="feedback-form" action="https://formspree.io/f/xyzdrgar" method="POST" class="space-y-6" enctype="multipart/form-data">
             <h2 class="text-2xl font-semibold text-gray-600">What were the two biggest takeaways from today?</h2>
             <div class="relative">
                 <input
@@ -40,6 +40,23 @@
                     placeholder="Reference tools, techniques, or thinking that you can apply in the coming weeks..."
                 ></textarea>
             </div>
+            
+            <div class="relative">
+                <label for="attachment" class="block text-sm font-medium text-gray-700 mb-2">Upload a File (optional)</label>
+                <input
+                    type="file"
+                    name="_attachments"
+                    id="attachment"
+                    class="block w-full text-sm text-gray-500
+                           file:mr-4 file:py-2 file:px-4
+                           file:rounded-full file:border-0
+                           file:text-sm file:font-semibold
+                           file:bg-gray-200 file:text-gray-700
+                           hover:file:bg-gray-300
+                           transition duration-200"
+                >
+            </div>
+
             <button
                 type="submit"
                 id="submit-feedback"
