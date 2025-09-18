@@ -65,9 +65,10 @@
             appId: "1:626672665851:web:4b1147e264c2ea70d59c5e"
         };
         
-       // Initialize Firebase
-  const app = initializeApp(firebaseConfig);
-</script>
+        // Initialize Firebase
+        const app = firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+        const auth = firebase.auth();
 
         // Get references to HTML elements
         const feedbackBox = document.getElementById('feedback-box');
