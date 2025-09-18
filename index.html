@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Content and Language Integrated Instruction</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f3f4f6;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 min-h-screen flex items-center justify-center py-10">
+    <div class="bg-white rounded-2xl shadow-xl overflow-hidden max-w-4xl w-full mx-auto p-8 lg:p-12 border border-gray-200">
+        <!-- Header -->
+        <div class="text-center mb-10">
+            <h1 class="text-3xl font-bold text-black tracking-tight">CONTENT AND LANGUAGE INTEGRATED INSTRUCTION</h1>
+        </div>
+
+        <!-- Feedback and Takeaways Section -->
+        <div class="space-y-6">
+            <h2 class="text-2xl font-semibold text-gray-600">What were the two biggest takeaways from today?</h2>
+            <div class="relative">
+                <textarea
+                    id="feedback-box"
+                    class="w-full h-40 p-4 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-200 resize-none"
+                    placeholder="Reference tools, techniques, or thinking that you can apply in the coming weeks..."
+                ></textarea>
+            </div>
+            <button
+                id="submit-feedback"
+                class="w-full bg-black hover:bg-gray-800 text-white font-bold py-3 px-6 rounded-lg transition duration-300 shadow-md transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-gray-700 focus:ring-offset-2"
+            >
+                Submit Exit Card
+            </button>
+        </div>
+    </div>
+</body>
+</html>
