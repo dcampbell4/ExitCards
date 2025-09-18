@@ -21,7 +21,7 @@
         </div>
 
         <!-- Feedback and Takeaways Section -->
-        <div class="space-y-6">
+        <div id="feedback-form" class="space-y-6">
             <h2 class="text-2xl font-semibold text-gray-600">What were the two biggest takeaways from today?</h2>
             <div class="relative">
                 <textarea
@@ -37,6 +37,92 @@
                 Submit Exit Card
             </button>
         </div>
+
+        <!-- Thank You Message -->
+        <div id="thank-you-message" class="hidden text-center text-gray-800">
+            <h2 class="text-3xl font-bold mb-4">Thank you for your participation and feedback!</h2>
+            <p class="text-gray-600">Your insights have been recorded. You can close this page now.</p>
+        </div>
     </div>
+
+    <script type="module">
+        // Import Firebase modules
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        // Global variables provided by the environment
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+        const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {};
+        const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        const auth = getAuth(app);
+
+        // Get references to HTML elements
+        const feedbackBox = document.getElementById('feedback-box');
+        const submitButton = document.getElementById('submit-feedback');
+        const feedbackForm = document.getElementById('feedback-form');
+        const thankYouMessage = document.getElementById('thank-you-message');
+        
+        // Authenticate the user and set up the submission logic
+        onAuthStateChanged(auth, async (user) => {
+            if (!user) {
+                // Sign in with custom token or anonymously
+                try {
+                    if (initialAuthToken) {
+                        await signInWithCustomToken(auth, initialAuthToken);
+                    } else {
+                        await signInAnonymously(auth);
+                    }
+                } catch (error) {
+                    console.error("Authentication failed:", error);
+                }
+            }
+
+            // Add click listener to the submit button
+            submitButton.addEventListener('click', async () => {
+                const feedbackText = feedbackBox.value.trim();
+
+                if (feedbackText.length === 0) {
+                    // Do nothing if the feedback is empty
+                    return;
+                }
+
+                submitButton.disabled = true; // Disable button to prevent multiple submissions
+                submitButton.textContent = 'Submitting...';
+
+                try {
+                    const userId = auth.currentUser?.uid;
+                    if (!userId) {
+                        throw new Error("User not authenticated.");
+                    }
+
+                    // Define the Firestore collection path
+                    const feedbackCollection = collection(db, `artifacts/${appId}/users/${userId}/exit_cards`);
+                    
+                    // Add the feedback and a server timestamp to the collection
+                    await addDoc(feedbackCollection, {
+                        feedback: feedbackText,
+                        timestamp: serverTimestamp()
+                    });
+
+                    // Hide the form and show the thank you message
+                    feedbackForm.classList.add('hidden');
+                    thankYouMessage.classList.remove('hidden');
+
+                } catch (e) {
+                    console.error("Error adding document: ", e);
+                    alert("There was an error submitting your feedback. Please try again.");
+                } finally {
+                    submitButton.disabled = false;
+                    submitButton.textContent = 'Submit Exit Card';
+                }
+            });
+        });
+
+    </script>
 </body>
 </html>
