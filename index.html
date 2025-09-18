@@ -48,14 +48,19 @@
     <script type="module">
         // Import Firebase modules
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-        // Global variables provided by the environment
-        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
-        const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {};
-        const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
-
+        // Your web app's Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyBsChP8WXJst0T2i66-u_N4qJxyjQ5vIdA",
+            authDomain: "exit-cards.firebaseapp.com",
+            projectId: "exit-cards",
+            storageBucket: "exit-cards.firebasestorage.app",
+            messagingSenderId: "626672665851",
+            appId: "1:626672665851:web:4b1147e264c2ea70d59c5e"
+        };
+        
         // Initialize Firebase
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
@@ -68,48 +73,29 @@
         const thankYouMessage = document.getElementById('thank-you-message');
         
         // Authenticate the user and set up the submission logic
-        onAuthStateChanged(auth, async (user) => {
-            if (!user) {
-                // Sign in with custom token or anonymously
-                try {
-                    if (initialAuthToken) {
-                        await signInWithCustomToken(auth, initialAuthToken);
-                    } else {
-                        await signInAnonymously(auth);
-                    }
-                } catch (error) {
-                    console.error("Authentication failed:", error);
-                }
-            }
-
+        signInAnonymously(auth).then(() => {
+            const userId = auth.currentUser.uid;
+            
             // Add click listener to the submit button
             submitButton.addEventListener('click', async () => {
                 const feedbackText = feedbackBox.value.trim();
 
                 if (feedbackText.length === 0) {
-                    // Do nothing if the feedback is empty
                     return;
                 }
 
-                submitButton.disabled = true; // Disable button to prevent multiple submissions
+                submitButton.disabled = true;
                 submitButton.textContent = 'Submitting...';
 
                 try {
-                    const userId = auth.currentUser?.uid;
-                    if (!userId) {
-                        throw new Error("User not authenticated.");
-                    }
-
-                    // Define the Firestore collection path
-                    const feedbackCollection = collection(db, `artifacts/${appId}/users/${userId}/exit_cards`);
+                    const feedbackCollection = collection(db, `exit_cards`);
                     
-                    // Add the feedback and a server timestamp to the collection
                     await addDoc(feedbackCollection, {
                         feedback: feedbackText,
-                        timestamp: serverTimestamp()
+                        timestamp: serverTimestamp(),
+                        userId: userId
                     });
 
-                    // Hide the form and show the thank you message
                     feedbackForm.classList.add('hidden');
                     thankYouMessage.classList.remove('hidden');
 
@@ -121,8 +107,9 @@
                     submitButton.textContent = 'Submit Exit Card';
                 }
             });
+        }).catch((error) => {
+            console.error("Authentication failed:", error);
         });
-
     </script>
 </body>
 </html>
