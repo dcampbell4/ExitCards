@@ -21,22 +21,33 @@
         </div>
 
         <!-- Feedback and Takeaways Section -->
-        <div id="feedback-form" class="space-y-6">
+        <form id="feedback-form" action="https://formspree.io/f/xyzdrgar" method="POST" class="space-y-6">
             <h2 class="text-2xl font-semibold text-gray-600">What were the two biggest takeaways from today?</h2>
+            <div class="relative">
+                <input
+                    type="text"
+                    name="name"
+                    id="participant-name"
+                    class="w-full p-4 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-200"
+                    placeholder="Participant Name (optional)"
+                >
+            </div>
             <div class="relative">
                 <textarea
                     id="feedback-box"
+                    name="feedback"
                     class="w-full h-40 p-4 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-200 resize-none"
                     placeholder="Reference tools, techniques, or thinking that you can apply in the coming weeks..."
                 ></textarea>
             </div>
             <button
+                type="submit"
                 id="submit-feedback"
                 class="w-full bg-black hover:bg-gray-800 text-white font-bold py-3 px-6 rounded-lg transition duration-300 shadow-md transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-gray-700 focus:ring-offset-2"
             >
                 Submit Exit Card
             </button>
-        </div>
+        </form>
 
         <!-- Thank You Message -->
         <div id="thank-you-message" class="hidden text-center text-gray-800">
@@ -45,70 +56,14 @@
         </div>
     </div>
 
-    <script type="module">
-      import { initializeApp } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-app.js";
-
-      const firebaseConfig = {
-        apiKey: "AIzaSyBsChP8WXJst0T2i66-u_N4qJxyjQ5vIdA",
-        authDomain: "exit-cards.firebaseapp.com",
-        projectId: "exit-cards",
-        storageBucket: "exit-cards.firebasestorage.app",
-        messagingSenderId: "626672665851",
-        appId: "1:626672665851:web:4b1147e264c2ea70d59c5e"
-  };
-
-      const app = initializeApp(firebaseConfig);
-  
-    // Get references to HTML elements
-        const feedbackBox = document.getElementById('feedback-box');
-        const submitButton = document.getElementById('submit-feedback');
+    <script>
         const feedbackForm = document.getElementById('feedback-form');
         const thankYouMessage = document.getElementById('thank-you-message');
         
-        // Authenticate the user and set up the submission logic
-        auth.signInAnonymously().then(() => {
-            const userId = auth.currentUser.uid;
-            console.log("User authenticated anonymously with ID:", userId);
-            
-            // Add click listener to the submit button
-            submitButton.addEventListener('click', async () => {
-                const feedbackText = feedbackBox.value.trim();
-
-                if (feedbackText.length === 0) {
-                    console.log("Feedback box is empty. Submission aborted.");
-                    return;
-                }
-
-                submitButton.disabled = true;
-                submitButton.textContent = 'Submitting...';
-                console.log("Attempting to submit feedback...");
-
-                try {
-                    await db.collection("exit_cards").add({
-                        feedback: feedbackText,
-                        timestamp: firebase.firestore.FieldValue.serverTimestamp(),
-                        userId: userId
-                    });
-
-                    console.log("Feedback submitted successfully!");
-                    feedbackForm.classList.add('hidden');
-                    thankYouMessage.classList.remove('hidden');
-
-                } catch (e) {
-                    console.error("Error adding document: ", e);
-                    // Use a simple alert since a custom UI is not requested
-                    alert("There was an error submitting your feedback. Please check the console for details.");
-                } finally {
-                    submitButton.disabled = false;
-                    submitButton.textContent = 'Submit Exit Card';
-                }
-            });
-        }).catch((error) => {
-            console.error("Authentication failed:", error);
-            alert("Failed to connect to Firebase. Please check the console for details.");
+        feedbackForm.addEventListener('submit', function(event) {
+            feedbackForm.classList.add('hidden');
+            thankYouMessage.classList.remove('hidden');
         });
     </script>
 </body>
 </html>
-
-
