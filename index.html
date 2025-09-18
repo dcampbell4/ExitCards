@@ -45,26 +45,29 @@
         </div>
     </div>
 
-    <script type="module">
-        // Import Firebase modules
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-app.js";
-        import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-auth.js";
-        import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-firestore.js";
+    <!-- Firebase SDKs - v8.10.1 (Namespaced) -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
 
-        // Your web app's Firebase configuration
+    <script>
+        // The error you're seeing, CONFIGURATION_NOT_FOUND, means the Firebase project
+        // credentials below are incorrect. You must replace them with your own.
+        // Go to your Firebase project, click on "Project settings," and copy the
+        // "Firebase SDK snippet" for your web app.
+        
         const firebaseConfig = {
-            apiKey: "AIzaSyBsChP8WXJst0T2i66-u_N4qJxyjQ5vIdA",
-            authDomain: "exit-cards.firebaseapp.com",
-            projectId: "exit-cards",
+            apiKey: "AIzaSyBsChP8WXJst0T2i66-u_N4qJxyjQ5vIdA",              // Replace with your project's API Key
+            authDomain: "exit-cards.firebaseapp.com",      // Replace with your project's Auth Domain
+            projectId: "exit-cards",        // Replace with your project's Project ID
             storageBucket: "exit-cards.firebasestorage.app",
             messagingSenderId: "626672665851",
             appId: "1:626672665851:web:4b1147e264c2ea70d59c5e"
         };
         
-        // Initialize Firebase
-        const app = initializeApp(firebaseConfig);
-        const db = getFirestore(app);
-        const auth = getAuth(app);
+       // Initialize Firebase
+  const app = initializeApp(firebaseConfig);
+</script>
 
         // Get references to HTML elements
         const feedbackBox = document.getElementById('feedback-box');
@@ -73,35 +76,38 @@
         const thankYouMessage = document.getElementById('thank-you-message');
         
         // Authenticate the user and set up the submission logic
-        signInAnonymously(auth).then(() => {
+        auth.signInAnonymously().then(() => {
             const userId = auth.currentUser.uid;
+            console.log("User authenticated anonymously with ID:", userId);
             
             // Add click listener to the submit button
             submitButton.addEventListener('click', async () => {
                 const feedbackText = feedbackBox.value.trim();
 
                 if (feedbackText.length === 0) {
+                    console.log("Feedback box is empty. Submission aborted.");
                     return;
                 }
 
                 submitButton.disabled = true;
                 submitButton.textContent = 'Submitting...';
+                console.log("Attempting to submit feedback...");
 
                 try {
-                    const feedbackCollection = collection(db, `exit_cards`);
-                    
-                    await addDoc(feedbackCollection, {
+                    await db.collection("exit_cards").add({
                         feedback: feedbackText,
-                        timestamp: serverTimestamp(),
+                        timestamp: firebase.firestore.FieldValue.serverTimestamp(),
                         userId: userId
                     });
 
+                    console.log("Feedback submitted successfully!");
                     feedbackForm.classList.add('hidden');
                     thankYouMessage.classList.remove('hidden');
 
                 } catch (e) {
                     console.error("Error adding document: ", e);
-                    alert("There was an error submitting your feedback. Please try again.");
+                    // Use a simple alert since a custom UI is not requested
+                    alert("There was an error submitting your feedback. Please check the console for details.");
                 } finally {
                     submitButton.disabled = false;
                     submitButton.textContent = 'Submit Exit Card';
@@ -109,6 +115,7 @@
             });
         }).catch((error) => {
             console.error("Authentication failed:", error);
+            alert("Failed to connect to Firebase. Please check the console for details.");
         });
     </script>
 </body>
